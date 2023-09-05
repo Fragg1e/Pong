@@ -189,13 +189,17 @@ def game_over():
 
     # Draw the remaining time for player 1 on the screen
     new_high_score_text = get_font(40).render((f"NEW HIGHSCORE!"), True, WHITE)
+    
+    score_text = get_font(40).render((f"SCORE: {singleplayer_score}"), True, WHITE)
 
-    if singleplayer_score > highscore:
-        highscore = singleplayer_score
+    if singleplayer_score >= highscore:
+        
         WIN.blit(
             new_high_score_text,
-            (WIDTH / 2 - (new_high_score_text.get_width() / 2), HEIGHT * 0.5),
+            (WIDTH / 2 - (new_high_score_text.get_width() / 2), HEIGHT * 0.3),
         )
+    
+    
 
     # Draw the remaining time for player 1 on the screen
     game_over_text = get_font(100).render(("GAME OVER"), True, WHITE)
@@ -210,6 +214,11 @@ def game_over():
     WIN.blit(
         high_score_text, (WIDTH // 2 - (high_score_text.get_width() / 2), HEIGHT * 0.4)
     )
+    
+    WIN.blit(
+            score_text,
+            (WIDTH / 2 - (score_text.get_width() / 2), HEIGHT * 0.5),
+        )
 
     MAIN_MENU_BUTTON = Button(
         image=pygame.image.load(r"assets\Options Rect.png"),
@@ -322,13 +331,17 @@ def ball_movement():
     ball.y += ball_speed_y
 
 
-def paddle_collision(mod, mode):
-    global ball_speed_x, ball_speed_y, player1_active, player2_active, singleplayer_score
+def paddle_collision(mod):
+    global ball_speed_x, ball_speed_y, player1_active, player2_active, singleplayer_score, highscore
 
     if ball.colliderect(player_paddle):
         sound("paddle")
-        if mode == "singleplayer":
-            singleplayer_score += 1
+        
+        
+        singleplayer_score += 1
+        if singleplayer_score > highscore:
+            highscore = singleplayer_score
+        
 
         if player1_active:
             if player1_rumble == "Laser":
@@ -378,7 +391,7 @@ def wall_collision():
 
 
 def score(multiplayer):
-    global player1_score, player2_score, player1_active, player2_active, ball_speed_x, ball_speed_y, lives, singleplayer_score
+    global player1_score, player2_score, player1_active, player2_active, ball_speed_x, ball_speed_y
 
     # Check if ball is missed
 
@@ -503,7 +516,7 @@ def singleplayer():
             ball_movement()
 
             # paddle collision physics
-            paddle_collision(1.2, "singleplayer")
+            paddle_collision(1.2)
 
             # Collision detection with walls
             wall_collision()
@@ -541,7 +554,7 @@ def singleplayer():
             )
 
         # Draw the scoreboard
-        score_text = score_font.render(f"{singleplayer_score}", True, WHITE)
+        score_text = get_font(50).render(f"{singleplayer_score}", True, WHITE)
         WIN.blit(score_text, (WIDTH // 2 - score_text.get_width() // 2, 20))
 
         # Draw the paddles and ball
@@ -695,7 +708,7 @@ def multiplayer():
             ball_movement()
 
             # paddle collision physics
-            paddle_collision(1.2, "multiplayer")
+            paddle_collision(1.2)
 
             # Collision detection with walls
             wall_collision()
